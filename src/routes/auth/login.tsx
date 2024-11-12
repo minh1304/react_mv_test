@@ -2,8 +2,14 @@ import * as React from 'react'
 import { createFileRoute, useNavigate  } from '@tanstack/react-router'
 import type { FieldApi } from '@tanstack/react-form';
 import { useForm } from '@tanstack/react-form';
+import axios from 'axios';
+import { useMutation } from '@tanstack/react-query';
 
-
+interface User
+{
+    userName: string,
+    password: string
+}
 export const Route = createFileRoute('/auth/login')({
   component: LoginComponent,
 })
@@ -19,15 +25,30 @@ function FieldInfo({ field }: { field: FieldApi<any, any, any, any> }) {
   }
 function LoginComponent() {
     const navigate = useNavigate({ from: '/auth/login' })
-    const form = useForm({
+    const mutation = useMutation({
+        mutationFn: (user: User) => axios.post('https://localhost:7188/api/Auth/login', user),
+        onSuccess: (response) => {
+            const token = response.data?.token;
+            console.log(token)
+            if(token)
+            {
+                sessionStorage.setItem('authToken', token);
+                navigate({to: '/dashboard'})
+            }
+        },
+        onError: (error) => {
+            window.alert(error.message)
+        },
+
+    })
+    const form = useForm<User>({
         defaultValues: {
             userName: '',
             password: ''
         },
         onSubmit: async ({ value }) => {
-            // Add axios to fetch data 
             console.log(value);
-            navigate({to: '/'});
+            mutation.mutate(value);
         },
     });
     return (
@@ -36,7 +57,7 @@ function LoginComponent() {
                 <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
                     <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                         <h1 className="text-xl font-bold text-gray-900 md:text-2xl dark:text-white text-center">
-                            Create an account
+                            Login
                         </h1>
                         <form
                             onSubmit={(e) => {
@@ -132,7 +153,7 @@ function LoginComponent() {
                                         disabled={!canSubmit}
                                         className="w-full mt-4 inline-flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400"
                                     >
-                                        {isSubmitting ? '...' : 'Create'}
+                                        {isSubmitting ? '...' : 'Submit'}
                                     </button>
                                 )}
                             />
