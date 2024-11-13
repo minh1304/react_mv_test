@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 
 
