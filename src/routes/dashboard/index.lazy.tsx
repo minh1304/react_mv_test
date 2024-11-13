@@ -23,10 +23,11 @@ export const Route = createLazyFileRoute('/dashboard/')({
 
 function DashboardComponent() {
   const [page, setPage] = useState(0);
+  const [hoveredProductId, setHoveredProductId] = useState<number | null>(null);
   const limit = 9;
 
   const { isLoading, error, data, isFetching } = useQuery<Product[]>({
-    queryKey: ['products', page], // Include page in queryKey for caching per page
+    queryKey: ['products', page], 
     queryFn: () =>
       fetch(`https://api.escuelajs.co/api/v1/products?offset=${page * limit}&limit=${limit}`).then((res) => {
         if (!res.ok) {
@@ -45,19 +46,47 @@ function DashboardComponent() {
 
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-bold mb-6 text-center">Welcome to the Dashboard!</h1>
-      <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {data?.map((product) => (
-          <li key={product.id} className="p-4 border rounded-lg shadow hover:shadow-lg transition-shadow">
-            <h2 className="text-lg font-semibold mb-2">{product.title}</h2>
-            <p className="text-gray-700 mb-2">Price: ${product.price}</p>
-            <p className="text-sm text-gray-500 mb-4">{product.description}</p>
-            {product.images[0] && (
-              <img src={product.images[0]} alt={product.title} className="h-50 object-cover rounded-md mb-4" />
-            )}
-          </li>
-        ))}
-      </ul>
+      <h1 className="text-2xl font-bold mb-6 text-center">Dashboard</h1>
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white border rounded-lg shadow-md">
+          <thead>
+            <tr>
+              <th className="px-6 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-700 uppercase">Image</th>
+              <th className="px-6 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-700 uppercase">Title</th>
+              <th className="px-6 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-700 uppercase">Price</th>
+              <th className="px-6 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-700 uppercase">Category</th>
+              <th className="px-6 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-700 uppercase">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data?.map((product) => (
+              <tr
+                key={product.id}
+                className="hover:bg-gray-50 transition-colors"
+                onMouseEnter={() => setHoveredProductId(product.id)}
+                onMouseLeave={() => setHoveredProductId(null)}
+              >
+                <td className="px-6 py-4 border-b border-gray-200">
+                  <img src={product.images[0]} alt={product.title} className="h-20 w-20 object-cover rounded-md" />
+                </td>
+                <td className="px-6 py-4 border-b border-gray-200">{product.title}</td>
+                <td className="px-6 py-4 border-b border-gray-200">${product.price}</td>
+                <td className="px-6 py-4 border-b border-gray-200">{product.category.name}</td>
+                <td className="px-6 py-4 border-b border-gray-200">
+                  {hoveredProductId === product.id && (
+                    <button
+                      className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                      onClick={() => handleEdit(product.id)}
+                    >
+                      Edit
+                    </button>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       <div className="flex justify-center items-center gap-4 mt-8">
         <button
           onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
@@ -78,5 +107,8 @@ function DashboardComponent() {
       {isFetching && <p className="text-center mt-4">Loading...</p>}
     </div>
   );
+  function handleEdit(productId: number) {
+    console.log("Edit product with ID:", productId);
+  }
 }
 export default DashboardComponent;
