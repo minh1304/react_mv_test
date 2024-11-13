@@ -1,9 +1,11 @@
-import * as React from 'react'
-import { createFileRoute, redirect } from '@tanstack/react-router'
+import * as React from 'react';
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import { createFileRoute, redirect } from '@tanstack/react-router';
+
 
 export const Route = createFileRoute('/dashboard/')({
   beforeLoad: async ({ location }) => {
-    const token = sessionStorage.getItem('authToken')
+    const token = sessionStorage.getItem('accessToken');
 
     if (!token) {
       throw redirect({
@@ -11,18 +13,17 @@ export const Route = createFileRoute('/dashboard/')({
         search: {
           redirect: location.href,
         },
-      })
+      });
     }
   },
   component: DashboardComponent,
-})
+});
 
 function DashboardComponent() {
-  return (
-    <div>
-      <h1>Welcome to the Dashboard!</h1>
-    </div>
+  return (    
+    <div className="p-2">
+    <h3>Welcome Dashboard!</h3>
+  </div>
   )
 }
-
-export default DashboardComponent
+export default DashboardComponent;

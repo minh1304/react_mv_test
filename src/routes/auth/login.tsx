@@ -7,7 +7,7 @@ import { useMutation } from '@tanstack/react-query';
 
 interface User
 {
-    userName: string,
+    email: string,
     password: string
 }
 export const Route = createFileRoute('/auth/login')({
@@ -26,24 +26,25 @@ function FieldInfo({ field }: { field: FieldApi<any, any, any, any> }) {
 function LoginComponent() {
     const navigate = useNavigate({ from: '/auth/login' })
     const mutation = useMutation({
-        mutationFn: (user: User) => axios.post('https://localhost:7188/api/Auth/login', user),
+        mutationFn: (user: User) => axios.post('https://api.escuelajs.co/api/v1/auth/login', user),
         onSuccess: (response) => {
-            const token = response.data?.token;
-            console.log(token)
-            if(token)
+            const accessToken = response.data?.access_token;
+            const refreshToken = response.data?.refresh_token;
+            if(accessToken)
             {
-                sessionStorage.setItem('authToken', token);
+                sessionStorage.setItem('accessToken', accessToken);
+                sessionStorage.setItem('refreshToken', refreshToken);
                 navigate({to: '/dashboard'})
             }
         },
         onError: (error) => {
-            window.alert(error.message)
+            window.alert(error.message);
         },
 
     })
     const form = useForm<User>({
         defaultValues: {
-            userName: '',
+            email: '',
             password: ''
         },
         onSubmit: async ({ value }) => {
@@ -69,7 +70,7 @@ function LoginComponent() {
                         >
                             <div>
                                 <form.Field
-                                        name="userName"
+                                        name="email"
                                         validators={{
                                             onChange: ({ value }) =>
                                                 !value
