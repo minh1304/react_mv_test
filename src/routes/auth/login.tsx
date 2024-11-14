@@ -47,8 +47,7 @@ function LoginComponent() {
             email: '',
             password: ''
         },
-        onSubmit: async ({ value }) => {
-            console.log(value);
+        onSubmit: ({ value }) => {
             mutation.mutate(value);
         },
     });
