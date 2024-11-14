@@ -1,8 +1,7 @@
 import { createLazyFileRoute } from '@tanstack/react-router';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import EditComponent from '../../components/EditComponent'; // Adjust the path as needed
-
+import EditComponent from '../../components/EditComponent';
 interface Category {
   id: number;
   name: string;
@@ -47,7 +46,6 @@ function DashboardComponent() {
   const handleSave = (updatedProduct: { title: string; price: number; description: string }) => {
     console.log('Updated Product:', updatedProduct);
     setSelectedProduct(null);
-    // Here you would ideally send a PUT request to update the product in your API
   };
 
   const handleCancel = () => {
@@ -61,7 +59,6 @@ function DashboardComponent() {
     <div className="p-8">
       <h1 className="text-2xl font-bold mb-6 text-center">Dashboard</h1>
       
-      {/* Show EditComponent if a product is selected */}
       {selectedProduct ? (
         <EditComponent product={selectedProduct} onSave={handleSave} onCancel={handleCancel} />
       ) : (
