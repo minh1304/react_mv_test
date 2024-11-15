@@ -2,14 +2,19 @@ import { createLazyFileRoute } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 
 
-interface Product
-{
-  id: number,
-  title: string,
-  price: number,
-  category: string,
-  description: string,
-  image: string
+interface Category {
+  id: number;
+  name: string;
+  image: string;
+}
+
+interface Product {
+  id: number;
+  title: string;
+  price: number;
+  description: string;
+  images: string[];
+  category: Category;
 }
 export const Route = createLazyFileRoute('/')({
   component: Index,
@@ -20,7 +25,7 @@ function Index() {
   const { isLoading, error, data } = useQuery<Product[]>({
     queryKey: ['products'],
     queryFn: () =>
-      fetch('https://fakestoreapi.com/products').then((res) => res.json()),
+      fetch('https://api.escuelajs.co/api/v1/products').then((res) => res.json()),
   });
 
 
@@ -34,12 +39,12 @@ function Index() {
           {data?.map((product : Product) => (
             <div key={product.id} className="bg-white rounded-lg shadow-md p-4">
               <img
-                src={product.image}
+                src={product.images[0]}
                 alt={product.title}
                 className="h-48 w-full object-contain mb-4 rounded"
               />
               <h2 className='text-lg font-semibold text-gray-800 truncate'>{product.title}</h2>
-              <p className='text-gray-600 text-sm mt-1 truncate'>{product.category}</p>
+              <p className='text-gray-600 text-sm mt-1 truncate'>{product.category.name}</p>
               <p className='text-gray-800 font-semibold mt-2'>${product.price}</p>
             </div>
           ))}
