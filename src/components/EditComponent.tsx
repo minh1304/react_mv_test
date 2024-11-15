@@ -48,7 +48,7 @@ interface EditProps {
 
       const mutation = useMutation({
         mutationFn: (updatedProduct: Product) => axios.put(
-          `https://api.escuelajs.co/api/v1/productsssa/${product.id}`,
+          `https://api.escuelajs.co/api/v1/products/${product.id}`,
           {
             title: updatedProduct.title,
             price: updatedProduct.price,
